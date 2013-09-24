@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * MinHeap that can be used as priority queue for Dijkstra's algorithm.
@@ -25,7 +27,7 @@ import java.util.Map;
 public class MinHeap<T> extends AbstractQueue<T> {
 	private ArrayList<T> heap;
 	// for fast retrieval of item index
-	private Map<T, LinkedList<Integer>> map;
+	private Map<T, Set<Integer>> map;
 	private Comparator<? super T> c;
 	// following Java implementation of PriorityQueue<T>
 	private static final int DEFAULT_INITIAL_CAPACITY = 11;
@@ -281,18 +283,18 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	}
 	
 	private void initMap(int initialCapacity) {
-		map = new HashMap<T, LinkedList<Integer>>(initialCapacity);
+		map = new HashMap<T, Set<Integer>>(initialCapacity);
 	}
 	
 	private void initMap() {
-		map = new HashMap<T, LinkedList<Integer>>(heap.size());
+		map = new HashMap<T, Set<Integer>>(heap.size());
 		for (int i = 0; i < heap.size(); i++) {
 			if (map.containsKey(heap.get(i))) {
 				// map maintains as many copies as there are instances of the given item
 				map.get(heap.get(i)).add(i);
 			}
 			else {
-				map.put(heap.get(i), new LinkedList<Integer>());
+				map.put(heap.get(i), new HashSet<Integer>());
 				map.get(heap.get(i)).add(i);
 			}
 		}
