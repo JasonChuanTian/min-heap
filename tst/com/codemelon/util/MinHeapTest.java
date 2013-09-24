@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.codemelon.util;
 
 import static org.junit.Assert.*;
@@ -103,7 +100,18 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testClear() {
-		fail("Not yet implemented");
+		Integer[] items = { 0, 1, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items), new Comparator<Integer>() {
+			@Override
+			public int compare(Integer a, Integer b) {
+				return b - a;
+			}
+		});
+		heap.clear();
+		Comparator<? super Integer> comparator = heap.comparator();
+		assertEquals("heap size is 0", 0, heap.size());
+		assertTrue("comparator still returns negative value for inputs 3, 2", 
+				comparator.compare(3, 2) < 0);
 	}
 
 	/**
@@ -119,7 +127,14 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testComparator() {
-		fail("Not yet implemented");
+		MinHeap<Integer> heap = new MinHeap<Integer>(new Comparator<Integer>() {
+			@Override
+			public int compare(Integer a, Integer b) {
+				return b - a;
+			}
+		});
+		Comparator<? super Integer> comparator = heap.comparator();
+		assertTrue("comparator returns negative value for inputs 3, 2", comparator.compare(3, 2) < 0);
 	}
 
 	/**
@@ -127,7 +142,12 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testContainsObject() {
-		fail("Not yet implemented");
+		Integer[] items = { 0, 1, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		for (int i = 0; i < items.length; i++) {
+			assertTrue("heap contains " + items[i], heap.contains(items[i]));
+		}
+		assertFalse("heap contains " + 3, heap.contains(3));
 	}
 
 	/**

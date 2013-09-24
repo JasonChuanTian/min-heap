@@ -56,6 +56,16 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	 * Construct an empty <code>MinHeap</code> specifying the method for comparing
 	 * objects of type T
 	 */
+	public MinHeap(Comparator<? super T> comparator) {
+		this.heap = new ArrayList<T>(DEFAULT_INITIAL_CAPACITY);
+		c = comparator;
+		initMap(DEFAULT_INITIAL_CAPACITY);
+	}
+	
+	/**
+	 * Construct an empty <code>MinHeap</code> specifying the method for comparing
+	 * objects of type T and the heap's initial capacity
+	 */
 	public MinHeap(int initialCapacity, Comparator<? super T> comparator) {
 		this.heap = new ArrayList<T>(initialCapacity);
 		c = comparator;
@@ -226,6 +236,25 @@ public class MinHeap<T> extends AbstractQueue<T> {
 			swap(i, smallest);
 			minHeapify(smallest);
 		}
+	}
+	
+	private void decreaseKeyByIndex(int i, T item) {
+		if (c.compare(item, heap.get(i)) > 0) {
+			throw new IllegalArgumentException("new key is larger than current key");
+		}
+		map.get(heap.get(i)).remove(new Integer(i));
+		if (map.get(heap.get(i)).isEmpty()) {
+			map.remove(heap.get(i));
+		}
+		// TODO
+		heap.set(i, item);
+		/*
+		map.put(item, i);
+		while (i > 0 && heap.get(i).compareTo(heap.get(parent(i))) < 0) {
+			swap(i, parent(i));
+			i = parent(i);
+		}
+		*/
 	}
 	
 	private void swap(int i, int j) {
