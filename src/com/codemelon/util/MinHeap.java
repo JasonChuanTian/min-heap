@@ -1,9 +1,11 @@
 package com.codemelon.util;
 
+import java.util.AbstractQueue;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -19,7 +21,7 @@ import java.util.Map;
  * @author Marshall Farrier
  * @since Sep 23, 2013
  */
-public class MinHeap<T> {
+public class MinHeap<T> extends AbstractQueue<T> {
 	private ArrayList<T> heap;
 	// for fast retrieval of item index
 	private Map<T, Integer> map;
@@ -100,6 +102,116 @@ public class MinHeap<T> {
 		this.heap = new ArrayList<T>(items);
 		initMap();
 		buildMinHeap();
+	}
+	
+	/**
+	 * Inserts the specified item into this heap.
+	 * <p>
+	 * Note that if the item is already present, it is not inserted a second time.
+	 * In this case, the method returns false and does not modify the heap.
+	 * 
+	 * @return true if the item is not already in the heap
+	 */
+	@Override
+	public boolean add(T item) {
+		return offer(item);
+	}
+	
+	/**
+	 * Returns the comparator used to order the elements in the heap.
+	 * <p>
+	 * If no comparator was passed when the heap was constructed, the comparator
+	 * returned will enforce the natural ordering for objects of type T.
+	 * 
+	 * @return the comparator used to order the elements in the heap.
+	 */
+	public Comparator<? super T> comparator() {
+		return c;
+	}
+	
+	/**
+	 * Removes all of the elements from this heap. The heap will be empty after this call returns.
+	 * <p>
+	 * The comparator for ordering elements of the heap remains unchanged.
+	 */
+	@Override
+	public void clear() {
+		heap = new ArrayList<T>(DEFAULT_INITIAL_CAPACITY);
+		initMap(DEFAULT_INITIAL_CAPACITY);
+	}
+	
+	/**
+	 * Returns true if this heap contains the specified element.
+	 * <p>
+	 * This implementation differs from Java's PriorityQueue implementation
+	 * in that actual equality is required. The function returns true only if 
+	 * the heap contains a reference to the same object, i.e., only if
+	 * it contains an object x such that x == o
+	 * 
+	 * @return true if this heap contains the specified element
+	 */
+	@Override
+	public boolean contains(Object o) {
+		return map.containsKey(o);
+	}
+
+	/**
+	 * Inserts the specified item into this heap.
+	 * <p>
+	 * Note that if the item is already present, it is not inserted a second time.
+	 * In this case, the method returns false and does not modify the heap.
+	 * 
+	 * @return true if the item is not already in the heap
+	 */
+	@Override
+	public boolean offer(T arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	/**
+	 * Retrieves, but does not remove, the head of this heap, or returns <code>null</code>
+	 * if this queue is empty
+	 * 
+	 * @return the head of this heap
+	 */
+	@Override
+	public T peek() {
+		if (heap.size() == 0) { return null; }
+		return heap.get(0);
+	}
+
+	/**
+	 * Retrieves and removes the head of this heap, or returns <code>null</code> if this
+	 * heap is empty.
+	 * 
+	 * @return the head of this heap, or <code>null</code> if this heap is empty
+	 */
+	@Override
+	public T poll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/**
+	 * Returns an iterator over the elements in this heap. The iterator does not return the
+	 * elements in any particular order.
+	 * 
+	 * @returns an iterator over the elements in this heap
+	 */
+	@Override
+	public Iterator<T> iterator() {
+		return heap.listIterator();
+	}
+
+	/**
+	 * Returns the number of elements in this collection.
+	 * 
+	 * @returns the number of elements in this collection
+	 */
+	@Override
+	public int size() {
+		return heap.size();
 	}
 	
 	private void buildMinHeap() {
