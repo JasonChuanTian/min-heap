@@ -1,0 +1,8 @@
+min-heap
+=============================================
+Git repository for implementing a min heap (priority queue) 
+as described in CLRS, pp. 151ff. 
+Java's PriorityQueue implementation does not provide
+the decrease-key() method needed for implementing Dijkstra's
+algorithm
+Project started 2013-09-23
