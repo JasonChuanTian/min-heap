@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Map;
 public class MinHeap<T> extends AbstractQueue<T> {
 	private ArrayList<T> heap;
 	// for fast retrieval of item index
-	private Map<T, Integer> map;
+	private Map<T, LinkedList<Integer>> map;
 	private Comparator<? super T> c;
 	// following Java implementation of PriorityQueue<T>
 	private static final int DEFAULT_INITIAL_CAPACITY = 11;
@@ -65,10 +66,6 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	/**
 	 * Creates a <code>MinHeap</code> containing the elements in the specified collection, 
 	 * compared using their natural ordering.
-	 * <p>
-	 * The <code>items</code> collection cannot contain duplicates due to the mechanism 
-	 * used to ensure a fast extractMin() method. Items a and b may exist in the collection
-	 * such that a.compareTo(b) == 0 but not such that a == b.
 	 * 
 	 * @param items
 	 * @param comparator
@@ -89,10 +86,6 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	/**
 	 * Creates a <code>MinHeap</code> containing the elements in the specified collection, 
 	 * compared using the given comparator.
-	 * <p>
-	 * The <code>items</code> collection cannot contain duplicates due to the mechanism 
-	 * used to ensure a fast extractMin() method. Items a and b may exist in the collection
-	 * such that c.compareTo(a, b) == 0 but not such that a == b.
 	 * 
 	 * @param items
 	 * @param comparator
@@ -142,11 +135,6 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	
 	/**
 	 * Returns true if this heap contains the specified element.
-	 * <p>
-	 * This implementation differs from Java's PriorityQueue implementation
-	 * in that actual equality is required. The function returns true only if 
-	 * the heap contains a reference to the same object, i.e., only if
-	 * it contains an object x such that x == o
 	 * 
 	 * @return true if this heap contains the specified element
 	 */
@@ -157,9 +145,6 @@ public class MinHeap<T> extends AbstractQueue<T> {
 
 	/**
 	 * Inserts the specified item into this heap.
-	 * <p>
-	 * Note that if the item is already present, it is not inserted a second time.
-	 * In this case, the method returns false and does not modify the heap.
 	 * 
 	 * @return true if the item is not already in the heap
 	 */
@@ -219,16 +204,20 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	}
 	
 	private void initMap(int initialCapacity) {
-		map = new HashMap<T, Integer>(initialCapacity);
+		map = new HashMap<T, LinkedList<Integer>>(initialCapacity);
 	}
 	
 	private void initMap() {
-		map = new HashMap<T, Integer>(heap.size());
+		map = new HashMap<T, LinkedList<Integer>>(heap.size());
 		for (int i = 0; i < heap.size(); i++) {
 			if (map.containsKey(heap.get(i))) {
-				throw new IllegalArgumentException("collection contains duplicates");
+				// map maintains as many copies as there are instances of the given item
+				map.get(heap.get(i)).add(i);
 			}
-			map.put(heap.get(i), i);
+			else {
+				map.put(heap.get(i), new LinkedList<Integer>());
+				map.get(heap.get(i)).add(i);
+			}
 		}
 	}
 }
