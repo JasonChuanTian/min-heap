@@ -43,7 +43,6 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	 */
 	public MinHeap(int initialCapacity) {
 		this(initialCapacity, new Comparator<T>() {
-
 			@SuppressWarnings("unchecked")
 			@Override
 			public int compare(T a, T b) {
@@ -73,7 +72,6 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	 */
 	public MinHeap(Collection<? extends T> items) {
 		this(items, new Comparator<T>() {
-
 			@SuppressWarnings("unchecked")
 			@Override
 			public int compare(T a, T b) {
@@ -93,6 +91,7 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	 */
 	public MinHeap(Collection<? extends T> items, Comparator<? super T> comparator) {
 		this.heap = new ArrayList<T>(items);
+		c = comparator;
 		initMap();
 		buildMinHeap();
 	}
@@ -200,7 +199,56 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	}
 	
 	private void buildMinHeap() {
-		// TODO
+		for (int i = (heap.size() / 2) - 1; i >= 0; i--) {
+			minHeapify(i);
+		}
+	}
+	
+	/**
+	 * Following CLRS, p. 154, assumes that the subtrees
+	 * to the left and right are already heapified and allows
+	 * the element at i to float down as necessary
+	 * 
+	 * @param i index at which to heapify
+	 */
+	private void minHeapify(int i) {
+		int l = left(i),
+			r = right(i),
+			smallest = i;
+		
+		if (l < heap.size() && c.compare(heap.get(l), heap.get(i)) < 0) {
+			smallest = l;
+		}
+		if (r < heap.size() && c.compare(heap.get(r), heap.get(smallest)) < 0) {
+			smallest = r;
+		}
+		if (smallest != i) {
+			swap(i, smallest);
+			minHeapify(smallest);
+		}
+	}
+	
+	private void swap(int i, int j) {
+		T tmp = heap.get(i);
+		heap.set(i, heap.get(j));
+		heap.set(j, tmp);
+		map.get(heap.get(i)).remove(new Integer(j));
+		map.get(heap.get(j)).remove(new Integer(i));
+		map.get(heap.get(i)).add(i);
+		map.get(heap.get(j)).add(j);
+		
+	}
+	
+	private static int parent(int i) {
+		return (i - 1) / 2;
+	}
+	
+	private static int left(int i) {
+		return 2 * i + 1;
+	}
+	
+	private static int right(int i) {
+		return 2 * i + 2;
 	}
 	
 	private void initMap(int initialCapacity) {

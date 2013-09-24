@@ -6,6 +6,7 @@ package com.codemelon.util;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 import org.junit.Test;
 
@@ -44,7 +45,16 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testMinHeapIntComparatorOfQsuperT() {
-		fail("Not yet implemented");
+		MinHeap<Integer> heap = new MinHeap<Integer>(8, new Comparator<Integer>() {
+			@Override
+			public int compare(Integer a, Integer b) {
+				return b - a;
+			}
+		});
+		assertEquals("constructor with custom comparator creates a heap of initial size 0", 
+				0, heap.size());
+		assertFalse("heap with custom comparator does not initially contain a test object", 
+				heap.contains(0));
 	}
 
 	/**
@@ -58,6 +68,7 @@ public class MinHeapTest {
 		for (int i = 0; i < items.length; i++) {
 			assertTrue("heap contains " + items[i], heap.contains(items[i]));
 		}
+		assertEquals("correct head of heap", new Integer(0), heap.peek());
 	}
 
 	/**
@@ -65,7 +76,18 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testMinHeapCollectionOfQextendsTComparatorOfQsuperT() {
-		fail("Not yet implemented");
+		Integer[] items = { 2, 1, 0, 2, 1 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items), new Comparator<Integer>() {
+			@Override
+			public int compare(Integer a, Integer b) {
+				return b - a;
+			}
+		});
+		assertEquals("heap initialized with collection and comparator has correct size", 5, heap.size());
+		for (int i = 0; i < items.length; i++) {
+			assertTrue("heap contains " + items[i], heap.contains(items[i]));
+		}
+		assertEquals("correct head of heap with different comparator", new Integer(2), heap.peek());
 	}
 	
 	/**
