@@ -187,8 +187,20 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	 */
 	@Override
 	public T poll() {
-		// TODO Auto-generated method stub
-		return null;
+		if (heap.size() < 1) {
+			// following poll() method of Java PriorityQueue
+			// rather than exception used in CLRS, p. 163
+			return null;
+		}
+		int lastIndex = heap.size() - 1;
+		T min = heap.get(0);
+		removeMapping(min, 0);
+		heap.set(0, heap.get(lastIndex));
+		addMapping(heap.get(0), 0);
+		removeMapping(heap.get(lastIndex), lastIndex);
+		heap.remove(lastIndex);
+		minHeapify(0);
+		return min;
 	}
 
 	/**
@@ -252,6 +264,11 @@ public class MinHeap<T> extends AbstractQueue<T> {
 		decreaseKeyByIndex(i);
 	}
 	
+	/**
+	 * The item at index i has been changed so that its key is less than or equal
+	 * to the previous key of the item in this position.
+	 * @param i
+	 */
 	private void decreaseKeyByIndex(int i) {
 		while (i > 0 && c.compare(heap.get(i), heap.get(parent(i))) < 0) {
 			swap(i, parent(i));

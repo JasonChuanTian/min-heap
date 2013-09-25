@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -92,7 +95,17 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testSize() {
-		fail("Not yet implemented");
+		Double[] items = { 3.14, 2.718, 1.0, 7.0 };
+		MinHeap<Double> heap = new MinHeap<Double>(Arrays.asList(items));
+		assertEquals("correct initial size", items.length, heap.size());
+		heap.offer(1.0);
+		assertEquals("correct size after adding another item", items.length + 1, heap.size());
+		int timesToPoll = 3;
+		for (int i = 0; i < timesToPoll; i++) {
+			heap.poll();
+		}
+		assertEquals("correct size after polling " + timesToPoll + " times", 
+				items.length + 1 - timesToPoll, heap.size());
 	}
 
 	/**
@@ -182,7 +195,12 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testPoll() {
-		fail("Not yet implemented");
+		Integer[] items = { 3, 1, 0, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		for (int i = 0; i < items.length; i++) {
+			assertEquals("correct item polled", new Integer(i), heap.poll());
+		}
+		assertTrue("heap empty after all items have been polled", heap.isEmpty());
 	}
 
 	/**
@@ -190,7 +208,16 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testIterator() {
-		fail("Not yet implemented");
+		String[] items = { "dog", "cat", "mouse", "aardvark", "giraffe" }; 
+		MinHeap<String> heap = new MinHeap<String>(Arrays.asList(items));
+		Set<String> bucket = new HashSet<String>(items.length);
+		Iterator<String> it = heap.iterator();
+		while (it.hasNext()) {
+			bucket.add(it.next());
+		}
+		for (String item : items) {
+			assertTrue("bucket contains \"" + item + "\"", bucket.contains(item));
+		}
 	}
 
 }
