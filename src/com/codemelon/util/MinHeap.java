@@ -285,6 +285,21 @@ public class MinHeap<T> extends AbstractQueue<T> {
 		decreaseKeyByIndex(i);
 	}
 	
+	/**
+	 * Reorganize the heap so as to accommodate a decrease in key
+	 * of one instance of the specified item.
+	 * <p>
+	 * Finds an instance of the given item, decreases its key according
+	 * to the decreaseKey() method of the given ItemChanger and reorganizes
+	 * the heap accordingly.
+	 * 
+	 * @param item
+	 * @param itemChanger
+	 */
+	public void decreaseKey(T item, ItemChanger<T> itemChanger) {
+		decreaseKey(find(item), itemChanger.decreaseKey(item));
+	}
+	
 	private void buildMinHeap() {
 		for (int i = (heap.size() / 2) - 1; i >= 0; i--) {
 			minHeapify(i);
