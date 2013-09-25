@@ -69,6 +69,11 @@ public class MinHeapTest {
 			assertTrue("heap contains " + items[i], heap.contains(items[i]));
 		}
 		assertEquals("correct head of heap", new Integer(0), heap.peek());
+
+		// test head for items with equal hash codes
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8) };
+		MinHeap<Node> nodeHeap = new MinHeap<Node>(Arrays.asList(nodes));
+		assertEquals("correct head with items having the same hash code", nodes[1], nodeHeap.peek());
 	}
 
 	/**
@@ -106,6 +111,10 @@ public class MinHeapTest {
 		}
 		assertEquals("correct size after polling " + timesToPoll + " times", 
 				items.length + 1 - timesToPoll, heap.size());
+		// test size for items with equal hash codes
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8) };
+		MinHeap<Node> nodeHeap = new MinHeap<Node>(Arrays.asList(nodes));
+		assertEquals("correct size with items having the same hash code", nodes.length, nodeHeap.size());
 	}
 
 	/**
@@ -177,6 +186,13 @@ public class MinHeapTest {
 		heap.offer(0);
 		assertEquals("heap has correct size", 4, heap.size());
 		assertEquals("correct element at head of heap", new Integer(0), heap.peek());
+		// insert duplicate object
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8) };
+		MinHeap<Node> nodeHeap = new MinHeap<Node>(Arrays.asList(nodes));
+		nodeHeap.offer(nodes[1]);
+		assertEquals("correct size after adding duplicate", nodes.length + 1, nodeHeap.size());
+		nodeHeap.offer(new Node(1, 3));
+		assertEquals("correct size after adding equal node", nodes.length + 2, nodeHeap.size());
 	}
 
 	/**
@@ -229,6 +245,11 @@ public class MinHeapTest {
 		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
 		assertEquals("correct index for smallest element", 0, heap.find(1));
 		assertEquals("correct index for missing element", -1, heap.find(0));
+
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8) };
+		MinHeap<Node> nodeHeap = new MinHeap<Node>(Arrays.asList(nodes));
+		assertEquals("correct index for smallest node", 0, nodeHeap.find(new Node(1, 3)));
+		assertEquals("correct index for missing node", -1, nodeHeap.find(new Node(2, 7)));
 	}
 
 	/**
@@ -248,7 +269,106 @@ public class MinHeapTest {
 	 * Test method for {@link com.codemelon.util.MinHeap#decreaseKey()}.
 	 */
 	@Test
-	public void testDecreaseKey() {
-		// TODO
+	public void testDecreaseKeyIntT() {
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8) };
+		MinHeap<Node> heap = new MinHeap<Node>(Arrays.asList(nodes));
+		int index = heap.find(new Node(2, 8));
+		heap.decreaseKey(index, new Node(5, 2));
+		assertEquals("heap has correct size", nodes.length, heap.size());
+		assertEquals("new node floated to head", new Node(5, 2), heap.peek());
+	}
+	
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#decreaseKey()}.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testDecreaseKeyIntTBadInput() {
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8) };
+		MinHeap<Node> heap = new MinHeap<Node>(Arrays.asList(nodes));
+		int index = heap.find(new Node(2, 8));
+		heap.decreaseKey(index, new Node(5, 9));
+	}
+	
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#decreaseKey()}.
+	 */
+	@Test
+	public void testDecreaseKeyTItemChanger() {
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8) };
+		MinHeap<Node> heap = new MinHeap<Node>(Arrays.asList(nodes));
+		heap.decreaseKey(nodes[2], new ItemChanger<Node>() {
+			@Override
+			public void decreaseKey(Node item) {
+				item.setWeight(2);
+			}
+			
+		});
+		assertEquals("heap has correct size", nodes.length, heap.size());
+		assertEquals("new node floated to head", new Node(2, 2), heap.peek());
+	}
+	
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#decreaseKey()}.
+	 */
+	@Test(expected=IllegalArgumentException.class)
+	public void testDecreaseKeyTItemChangerBadInput() {
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8), new Node(3, 9), 
+				new Node(4, 10), new Node(5, 11), new Node(6, 12) };
+		MinHeap<Node> heap = new MinHeap<Node>(Arrays.asList(nodes));
+		heap.decreaseKey(nodes[2], new ItemChanger<Node>() {
+			@Override
+			public void decreaseKey(Node item) {
+				item.setWeight(27);
+			}
+		});
+	}
+	
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#check()}.
+	 */
+	@Test
+	public void testCheck() {
+		Integer[] items = { 3, 1, 0, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		assertTrue("heap properties valid after construction", heap.check());
+		heap.offer(23);
+		assertTrue("heap properties valid after add()", heap.check());
+		heap.poll();
+		heap.poll();
+		assertTrue("heap properties valid after polling", heap.check());
+		// run check on a corrupt heap
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8), new Node(3, 9), 
+				new Node(4, 10), new Node(5, 11), new Node(6, 12) };
+		MinHeap<Node> nodeHeap = new MinHeap<Node>(Arrays.asList(nodes));
+		try {
+			nodeHeap.decreaseKey(nodes[2], new ItemChanger<Node>() {
+				@Override
+				public void decreaseKey(Node item) {
+					item.setWeight(27);
+				}
+			});
+		} catch (IllegalArgumentException e) { } // do nothing
+		assertFalse("heap does not pass check when corrupt", nodeHeap.check());
+	}
+	
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#reset()}.
+	 */
+	@Test
+	public void testReset() {
+		Node[] nodes = { new Node(0, 26), new Node(1, 3), new Node(2, 8), new Node(3, 9), 
+				new Node(4, 10), new Node(5, 11), new Node(6, 12) };
+		MinHeap<Node> heap = new MinHeap<Node>(Arrays.asList(nodes));
+		try {
+			heap.decreaseKey(nodes[2], new ItemChanger<Node>() {
+				@Override
+				public void decreaseKey(Node item) {
+					item.setWeight(27);
+				}
+			});
+		} catch (IllegalArgumentException e) { } // do nothing
+		assertFalse("heap does not pass check when corrupt", heap.check());
+		heap.reset();
+		assertTrue("heap passes check after it is reset", heap.check());
 	}
 }

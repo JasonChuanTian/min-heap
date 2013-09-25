@@ -262,6 +262,50 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	}
 	
 	/**
+	 * Resets a heap that may have been corrupted by external
+	 * modifications of its items.
+	 */
+	public void reset() {
+		initMap();
+		buildMinHeap();
+	}
+	
+	/**
+	 * Check the integrity of the heap. 
+	 * <p>
+	 * If the min-heap conditions are satisfied, and the mapping used for
+	 * fast retrieval of items is valid, return true. Returns false
+	 * if any of these conditions is violated.
+	 * 
+	 * @return true iff the heap meets all conditions of a min-heap
+	 * and its mappings are all valid.
+	 */
+	public boolean check() {
+		int len = heap.size();
+		// check that heap property holds
+		for (int i = (len / 2) - 1; i >= 0; i--) {
+			if (c.compare(heap.get(left(i)), heap.get(i)) < 0)
+				return false;
+			if (right(i) < len && c.compare(heap.get(right(i)), heap.get(i)) < 0)
+				return false;
+		}
+		// check that mapping is correct
+		// everything in the heap is included in the map
+		for (int i = 0; i < len; i++) {
+			if (!map.containsKey(heap.get(i)) || !map.get(heap.get(i)).contains(i)) 
+				return false;
+		}
+		// everything in the map is included in the heap
+		for (T item : map.keySet()) {
+			for (int i : map.get(item)) {
+				if (!item.equals(heap.get(i)))
+					return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
 	 * Replace the item at index i in the heap with a "smaller" item
 	 * according to the comparison in effect for this heap.
 	 * <p>
@@ -292,12 +336,31 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	 * Finds an instance of the given item, decreases its key according
 	 * to the decreaseKey() method of the given ItemChanger and reorganizes
 	 * the heap accordingly.
+	 * <p>
+	 * Note that it the overriden decreaseKey in itemChanger <em>increases</em>
+	 * the key in violation of its contract, the heap may become corrupt.
+	 * In this case an IllegalArgumentException is thrown
 	 * 
 	 * @param item
 	 * @param itemChanger
 	 */
 	public void decreaseKey(T item, ItemChanger<T> itemChanger) {
-		decreaseKey(find(item), itemChanger.decreaseKey(item));
+		int index = find(item),
+			len = heap.size();
+		// This has to happen before the item is modified, so
+		// we can't check whether the itemChanger is really decreasing the key
+		// before removing the item from the map
+		removeMapping(item, index);
+		itemChanger.decreaseKey(item);
+		addMapping(item, index);
+		// item must be <= its children
+		if (left(index) < len) {
+			if (c.compare(heap.get(left(index)), item) < 0 || (right(index) < len 
+					&& c.compare(heap.get(right(index)), item) < 0)) {
+				throw new IllegalArgumentException("heap was corrupted due to illegal key change");
+			}
+		}
+		decreaseKeyByIndex(index);
 	}
 	
 	private void buildMinHeap() {
