@@ -119,7 +119,11 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testAddT() {
-		fail("Not yet implemented");
+		Integer[] items = { 1, 3, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		heap.offer(0);
+		assertEquals("heap has correct size", 4, heap.size());
+		assertEquals("correct element at head of heap", new Integer(0), heap.peek());
 	}
 
 	/**
@@ -155,7 +159,11 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testOffer() {
-		fail("Not yet implemented");
+		Integer[] items = { 1, 3, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		heap.offer(0);
+		assertEquals("heap has correct size", 4, heap.size());
+		assertEquals("correct element at head of heap", new Integer(0), heap.peek());
 	}
 
 	/**
@@ -163,7 +171,10 @@ public class MinHeapTest {
 	 */
 	@Test
 	public void testPeek() {
-		fail("Not yet implemented");
+		Integer[] items = { 1, 0, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		assertEquals("correct value at head of queue", new Integer(0), heap.peek());
+		assertEquals("correct size after calling peek()", 3, heap.size());
 	}
 
 	/**

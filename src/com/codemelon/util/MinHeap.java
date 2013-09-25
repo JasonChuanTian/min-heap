@@ -157,12 +157,14 @@ public class MinHeap<T> extends AbstractQueue<T> {
 	/**
 	 * Inserts the specified item into this heap.
 	 * 
-	 * @return true if the item is not already in the heap
+	 * @return true (as specified by <code>Queue.offer(T))</code>
 	 */
 	@Override
-	public boolean offer(T arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean offer(T item) {
+		heap.add(item);
+		addMapping(item, heap.size() - 1);
+		decreaseKeyByIndex(heap.size() - 1);
+		return true;
 	}
 
 	/**
@@ -244,27 +246,39 @@ public class MinHeap<T> extends AbstractQueue<T> {
 		if (c.compare(item, heap.get(i)) > 0) {
 			throw new IllegalArgumentException("new key is larger than current key");
 		}
-		map.get(heap.get(i)).remove(new Integer(i));
-		if (map.get(heap.get(i)).isEmpty()) {
-			map.remove(heap.get(i));
-		}
-		// TODO
+		removeMapping(heap.get(i), i);
 		heap.set(i, item);
-		/*
-		map.put(item, i);
-		while (i > 0 && heap.get(i).compareTo(heap.get(parent(i))) < 0) {
+		addMapping(item, i);
+		decreaseKeyByIndex(i);
+	}
+	
+	private void decreaseKeyByIndex(int i) {
+		while (i > 0 && c.compare(heap.get(i), heap.get(parent(i))) < 0) {
 			swap(i, parent(i));
 			i = parent(i);
 		}
-		*/
+	}
+	
+	private void removeMapping(T item, Integer i) {
+		map.get(item).remove(i);
+		if (map.get(item).isEmpty()) {
+			map.remove(item);
+		}
+	}
+	
+	private void addMapping(T item, Integer i) {
+		if (!map.containsKey(item)) {
+			map.put(item, new HashSet<Integer>());
+		}
+		map.get(item).add(i);
 	}
 	
 	private void swap(int i, int j) {
+		map.get(heap.get(i)).remove(new Integer(i));
+		map.get(heap.get(j)).remove(new Integer(j));
 		T tmp = heap.get(i);
 		heap.set(i, heap.get(j));
 		heap.set(j, tmp);
-		map.get(heap.get(i)).remove(new Integer(j));
-		map.get(heap.get(j)).remove(new Integer(i));
 		map.get(heap.get(i)).add(i);
 		map.get(heap.get(j)).add(j);
 		
