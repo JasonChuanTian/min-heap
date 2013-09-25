@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
@@ -224,6 +223,68 @@ public class MinHeap<T> extends AbstractQueue<T> {
 		return heap.size();
 	}
 	
+	/**
+	 * Return an index in the heap for the given item or -1 if the item is not found.
+	 * <p>
+	 * If the item is found in the heap multiple times, the returned index
+	 * may point to any such occurrence.
+	 * <p>
+	 * This operation requires only O(1) time.
+	 * <p>
+	 * The indices used in the get() and find() methods are relevant
+	 * only for the decreaseKey() operation.
+	 * 
+	 * @param item item whose index is to be found
+	 * @return an index of the item or -1 if the item is not present in the heap
+	 */
+	public int find(T item) {
+		if (!map.containsKey(item)) {
+			return -1;
+		}
+		return map.get(item).iterator().next();
+	}
+	
+	/**
+	 * Return the item found at the given index in the heap.
+	 * <p>
+	 * Calling this function with the value returned from find()
+	 * is guaranteed to return the same item that was passed to find.
+	 * That is: heap.get(heap.find(item)).equals(item) is always true.
+	 * <p>
+	 * The indices used in the get() and find() methods are relevant
+	 * only for the decreaseKey() operation.
+	 * 
+	 * @param index index for the item to be retrieved
+	 * @return the item found at the specified index
+	 */
+	public T get(int index) {
+		return heap.get(index);
+	}
+	
+	/**
+	 * Replace the item at index i in the heap with a "smaller" item
+	 * according to the comparison in effect for this heap.
+	 * <p>
+	 * The item passed may be a modification of the item 
+	 * already present at the given index. 
+	 * 
+	 * @param i index at which some prior item is to be replaced 
+	 * by the specified item
+	 * @param item item to be inserted in the given location
+	 * @throws IllegalArgumentException if the item to be inserted
+	 * is larger than the item currently present at the given
+	 * index.
+	 */
+	public void decreaseKey(int i, T item) {
+		if (c.compare(item, heap.get(i)) > 0) {
+			throw new IllegalArgumentException("new key is larger than current key");
+		}
+		removeMapping(heap.get(i), i);
+		heap.set(i, item);
+		addMapping(item, i);
+		decreaseKeyByIndex(i);
+	}
+	
 	private void buildMinHeap() {
 		for (int i = (heap.size() / 2) - 1; i >= 0; i--) {
 			minHeapify(i);
@@ -252,16 +313,6 @@ public class MinHeap<T> extends AbstractQueue<T> {
 			swap(i, smallest);
 			minHeapify(smallest);
 		}
-	}
-	
-	private void decreaseKeyByIndex(int i, T item) {
-		if (c.compare(item, heap.get(i)) > 0) {
-			throw new IllegalArgumentException("new key is larger than current key");
-		}
-		removeMapping(heap.get(i), i);
-		heap.set(i, item);
-		addMapping(item, i);
-		decreaseKeyByIndex(i);
 	}
 	
 	/**

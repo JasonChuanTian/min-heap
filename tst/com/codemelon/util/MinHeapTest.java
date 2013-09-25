@@ -219,5 +219,36 @@ public class MinHeapTest {
 			assertTrue("bucket contains \"" + item + "\"", bucket.contains(item));
 		}
 	}
+	
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#find()}.
+	 */
+	@Test
+	public void testFind() {
+		Integer[] items = { 3, 1, 2 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		assertEquals("correct index for smallest element", 0, heap.find(1));
+		assertEquals("correct index for missing element", -1, heap.find(0));
+	}
 
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#get()}.
+	 */
+	@Test
+	public void testGet() {
+		Integer[] items = { 3, 1, 2, 1, 2, 0 };
+		MinHeap<Integer> heap = new MinHeap<Integer>(Arrays.asList(items));
+		assertEquals("correct smallest element", new Integer(0), heap.get(0));
+		for (int i = 0; i < items.length; i++) {
+			assertEquals("find() matches get() at index " + i, items[i], heap.get(heap.find(items[i])));
+		}
+	}
+	
+	/**
+	 * Test method for {@link com.codemelon.util.MinHeap#decreaseKey()}.
+	 */
+	@Test
+	public void testDecreaseKey() {
+		// TODO
+	}
 }
