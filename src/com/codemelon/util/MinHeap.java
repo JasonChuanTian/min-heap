@@ -17,8 +17,10 @@ import java.util.Set;
  * operation, so we need a custom implementation. This one closely
  * follows CLRS, pp. 151ff.
  * <p>
- * The heap cannot contain multiple pointers to the same object.
- * An attempt to insert it a second time will not modify the heap.
+ * Internally, the heap allows for fast access to its elements by means of
+ * a hash mapping an item to the set of indices where it is located in
+ * the array that backs the heap. This allows maximal performance (short
+ * of a Fibonacci heap) when items other than the head need to be modified.
  * 
  * @author Marshall Farrier
  * @since Sep 23, 2013
